@@ -1,8 +1,13 @@
-import {Config, CognitoIdentityCredentials} from 'aws-sdk';
+import {
+  Config,
+  CognitoIdentityCredentials,
+} from 'aws-sdk';
+
 import {
   CognitoUserPool,
   CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 

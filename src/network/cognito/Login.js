@@ -1,8 +1,15 @@
-import {Config, CognitoIdentityCredentials} from 'aws-sdk';
 import {
+  Config,
+  CognitoIdentityCredentials,
+} from 'aws-sdk';
+
+import {
+  CognitoUser,
   CognitoUserPool,
-  CognitoUserAttribute
+  CognitoUserAttribute,
+  AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -23,7 +30,8 @@ const userPool = new CognitoUserPool({
   ClientId: appConfig.ClientId,
 });
 
-class Signup {
+
+class Login {
   constructor(next, done, err){
     this.next = next;
     this.done = done;
@@ -31,34 +39,51 @@ class Signup {
   }
 
   handleRequest(action){
-    const email = action.network.payload.email.trim();
-    const password = action.network.payload.password.trim();
-    const attributeList = [
-      new CognitoUserAttribute({
-        Name: 'email',
-        Value: email,
-      })
-    ];
-    userPool.signUp(email, password, attributeList, null, (err, result) => {
-      if (err) {
-        console.log(err);
-        this.err(err);
-      } else {
-        console.log('user name is ' + result.user.getUsername());
-        console.log('call result: ', result);
-        this.next({ payload: result.user.getUsername() });
-        this.done();
-      }
+
+    var authenticationData = {
+      Username: action.network.payload.email,
+      Password: action.network.payload.password,
+    };
+
+    var authenticationDetails = new AuthenticationDetails(authenticationData);
+
+    var userData = {
+      Username: action.network.payload.email,
+      Pool: userPool,
+    };
+
+    var cognitoUser = new CognitoUser(userData);
+
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        console.log('access token + ', result.getAccessToken().getJwtToken());
+        
+        Config.credentials = new CognitoIdentityCredentials({
+          IdentityPoolId: appConfig.IdentityPoolId,
+          Logins : {
+            ['cognito-idp.us-west-1.amazonaws.com/'+appConfig.UserPoolId]:
+            result.getIdToken().getJwtToken()
+          }
+        });
+        
+        // Instantiate aws sdk service objects now that
+        // the credentials have been updated. 
+        // example: var s3 = new AWS.S3(); 
+        
+      },
+      
+      onFailure: err => console.log(err) || this.err(err),
+      
     });
 
     
   }
 }
 
-export default Signup;
+export default Login;
 
 
-export const SignupMock = class SignupMock {
+export const LoginMock = class LoginMock {
   constructor(next){
     this.next = next
   }
