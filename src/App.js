@@ -23,11 +23,18 @@ class App extends Component {
         network: {
           handler: 'Login',
           payload: { email, password },
-          nextAction: { type: 'setUser' },
+          nextAction: { type: 'setII' },
         },
       }),
 
-      
+      listBucket: (II) => ({
+        network: {
+          handler: 'ListBucket',
+          payload: { II },
+          nextAction: { type: 'setList' },
+        },
+      }),
+        
       verify: (email, verifyCode) => ({
         network: {
           handler: 'Verify',
@@ -66,6 +73,12 @@ class App extends Component {
       
       setVerifyCode: (state, { payload }) =>
         state.set('verifyCode', payload),
+
+      setList: (state, { payload }) =>
+        state.set('fileList', fromJS(payload)),
+
+      setII: (state, { payload }) =>
+        state.set('II', payload),
     }
   }
 
@@ -74,6 +87,8 @@ class App extends Component {
       email: '',
       password: '',
       verifyCode: '',
+      II: '',
+      fileList: [],
     });
   }
 
@@ -95,24 +110,40 @@ class App extends Component {
     const email = this.props.subState.get('email');
     const password = this.props.subState.get('password');
     const verifyCode = this.props.subState.get('verifyCode');
+
+    const fileList = this.props.subState.get('fileList');
     
     return (
       <div className="App">
+        <div>
+          email
+          <input type="email" value={email} onChange={this.setEmail} />
+          
+          password
+          <input type="password" value={password} onChange={this.setPassword} />
 
-        email
-        <input type="email" value={email} onChange={this.setEmail} />
+          verify
+          <input type="text" value={verifyCode} onChange={this.setVerifyCode} />
+
+          <button onClick={()=> this.props.signup(email, password)}> sign up </button>
+          <button onClick={()=> this.props.verify(email, verifyCode)}> verify </button>
+          <button onClick={()=> this.props.login(email, password)}> log in </button>
+
+          {JSON.stringify(this.props.subState.get('user'))}
+          {this.props.subState.get('II')}
+        </div>
+
+        <hr/>
         
-        password
-        <input type="password" value={password} onChange={this.setPassword} />
-
-        verify
-        <input type="text" value={verifyCode} onChange={this.setVerifyCode} />
-
-        <button onClick={()=> this.props.signup(email, password)}> sign up </button>
-        <button onClick={()=> this.props.verify(email, verifyCode)}> verify </button>
-        <button onClick={()=> this.props.login(email, password)}> log in </button>
-
-        {JSON.stringify(this.props.subState.get('user'))}
+        <button onClick={()=> this.props.listBucket(this.props.subState.get('II'))}>
+          list files
+        </button>
+        
+        {
+          fileList.map((file, i) => console.log(file)||(
+            <div key={i}>{file}</div>
+          ) )
+        }
       </div>
     );
   }

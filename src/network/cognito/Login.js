@@ -1,5 +1,6 @@
-import {
+import AWS, {
   Config,
+  CognitoIdentity,
   CognitoIdentityCredentials,
 } from 'aws-sdk';
 
@@ -14,10 +15,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 const appConfig = {
-  region: 'us-west-1',
+  region: 'eu-west-1',
   IdentityPoolId: 'eu-west-1:5f6c3098-8026-4e92-b138-348445f98e8a',
-  UserPoolId: 'eu-west-1_3YBPGT3Fp',
-  ClientId: '10dluku61iraj5rp1d1o85b20c',
+  UserPoolId: 'eu-west-1_bgcY4B0No',
+  ClientId: '6k9v6h39ajlo75uco5nncgd1rl',
 };
 
 Config.region = appConfig.region;
@@ -56,23 +57,43 @@ class Login {
 
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
-        console.log('access token + ', result.getAccessToken().getJwtToken());
         
-        Config.credentials = new CognitoIdentityCredentials({
+        const nuCC = Config.credentials = new CognitoIdentityCredentials({
           IdentityPoolId: appConfig.IdentityPoolId,
-          Logins : {
-            ['cognito-idp.us-west-1.amazonaws.com/'+appConfig.UserPoolId]:
+          Logins: {
+            ['cognito-idp.eu-west-1.amazonaws.com/'+appConfig.UserPoolId]:
             result.getIdToken().getJwtToken()
-          }
+          },
+        });
+
+        // evil global aws
+        AWS.config.update({
+          region: 'eu-west-1',
+          credentials: nuCC,
+        });
+
+        (new CognitoIdentity()).getId({
+          IdentityPoolId: appConfig.IdentityPoolId,
+          Logins: {
+            ['cognito-idp.eu-west-1.amazonaws.com/'+appConfig.UserPoolId]:
+            result.getIdToken().getJwtToken()
+          },
+          AccountId: '735148112467',
+        }, (err, data)=>{
+          console.log(err, data, 'id');
+          this.next({ payload: data.IdentityId });
+          this.done();
+          
         });
         
         // Instantiate aws sdk service objects now that
         // the credentials have been updated. 
         // example: var s3 = new AWS.S3(); 
+
         
       },
       
-      onFailure: err => console.log(err) || this.err(err),
+      onFailure: err => console.log(err) || this.err({ payload: err }),
       
     });
 

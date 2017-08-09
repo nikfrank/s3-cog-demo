@@ -12,11 +12,12 @@ import {
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+
 const appConfig = {
-  region: 'us-west-1',
+  region: 'eu-west-1',
   IdentityPoolId: 'eu-west-1:5f6c3098-8026-4e92-b138-348445f98e8a',
-  UserPoolId: 'eu-west-1_3YBPGT3Fp',
-  ClientId: '10dluku61iraj5rp1d1o85b20c',
+  UserPoolId: 'eu-west-1_bgcY4B0No',
+  ClientId: '6k9v6h39ajlo75uco5nncgd1rl',
 };
 
 Config.region = appConfig.region;
@@ -50,7 +51,7 @@ class Verify {
       .confirmRegistration(action.network.payload.verifyCode, true, (err, result) => {
         if (err) {
           console.log(err);
-          this.err(err);
+          this.err({ payload: err });
         } else {
           console.log('call result: ', result);
           this.next({ payload: result });
