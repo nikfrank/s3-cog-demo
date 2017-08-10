@@ -26,12 +26,27 @@ class App extends Component {
           nextAction: { type: 'setII' },
         },
       }),
+      
+      getCurrentUser: () => ({
+        network: {
+          handler: 'GetCurrentUser',
+          nextAction: { type: 'setII' },
+        },
+      }),
 
       listBucket: (II) => ({
         network: {
           handler: 'ListBucket',
           payload: { II },
           nextAction: { type: 'setList' },
+        },
+      }),
+
+      getFile: (file) => ({
+        network: {
+          handler: 'GetFile',
+          payload: { file },
+          nextAction: { type: 'setFile' },
         },
       }),
         
@@ -79,6 +94,9 @@ class App extends Component {
 
       setII: (state, { payload }) =>
         state.set('II', payload),
+
+      setFile: (state, { payload }) =>
+        state.set('file', payload),
     }
   }
 
@@ -88,10 +106,15 @@ class App extends Component {
       password: '',
       verifyCode: '',
       II: '',
+      file: '',
       fileList: [],
     });
   }
 
+  componentDidMount(){
+    this.props.getCurrentUser();
+  }
+  
   setEmail = ({ target: { value: email }})=>{
     this.props.setEmail(email);
   }
@@ -112,6 +135,7 @@ class App extends Component {
     const verifyCode = this.props.subState.get('verifyCode');
 
     const fileList = this.props.subState.get('fileList');
+    const file = this.props.subState.get('file');
     
     return (
       <div className="App">
@@ -141,9 +165,13 @@ class App extends Component {
         
         {
           fileList.map((file, i) => console.log(file)||(
-            <div key={i}>{file}</div>
+            <div key={i} onClick={()=> this.props.getFile(file)}>{file}</div>
           ) )
         }
+
+        <hr/>
+        
+        <pre style={{ textAlign: 'left' }}>{file}</pre>
       </div>
     );
   }

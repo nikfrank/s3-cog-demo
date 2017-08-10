@@ -11,9 +11,6 @@ import {
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-
 const appConfig = {
   region: 'eu-west-1',
   IdentityPoolId: 'eu-west-1:5f6c3098-8026-4e92-b138-348445f98e8a',
