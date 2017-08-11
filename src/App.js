@@ -1,133 +1,153 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { fromJS } from 'immutable';
+import {fromJS} from 'immutable';
 
 class App extends Component {
-  static get namespace(){
+  static get namespace() {
     return 'techscope-jlm-s3-demo-login';
   }
 
-  static get actions(){
+  static get actions() {
     return {
       signup: (email, password) => ({
         network: {
           handler: 'Signup',
-          payload: { email, password },
-          nextAction: { type: 'setUser' },
-        },
+          payload: {
+            email,
+            password
+          },
+          nextAction: {
+            type: 'setUser'
+          }
+        }
       }),
-      
+
       login: (email, password) => ({
         network: {
           handler: 'Login',
-          payload: { email, password },
-          nextAction: { type: 'setII' },
-        },
+          payload: {
+            email,
+            password
+          },
+          nextAction: {
+            type: 'setIdentityId'
+          }
+        }
       }),
-      
+
       getCurrentUser: () => ({
         network: {
           handler: 'GetCurrentUser',
-          nextAction: { type: 'setII' },
-        },
+          nextAction: {
+            type: 'setIdentityId'
+          }
+        }
       }),
 
-      listBucket: (II) => ({
+      listBucket: (identityId) => ({
         network: {
           handler: 'ListBucket',
-          payload: { II },
-          nextAction: { type: 'setList' },
-        },
+          payload: {
+            identityId
+          },
+          nextAction: {
+            type: 'setList'
+          }
+        }
       }),
 
       getFile: (file) => ({
         network: {
           handler: 'GetFile',
-          payload: { file },
-          nextAction: { type: 'setFile' },
-        },
+          payload: {
+            file
+          },
+          nextAction: {
+            type: 'setFile'
+          }
+        }
       }),
-        
+
       verify: (email, verifyCode) => ({
         network: {
           handler: 'Verify',
-          payload: { email, verifyCode },
-          nextAction: { type: 'setUser' },
-        },
+          payload: {
+            email,
+            verifyCode
+          },
+          nextAction: {
+            type: 'setUser'
+          }
+        }
       }),
 
-      setEmail: (email) => ({
-        type: 'setEmail',
-        payload: email,
-      }),
+      setEmail: (email) => ({type: 'setEmail', payload: email}),
 
-      setPassword: (password) => ({
-        type: 'setPassword',
-        payload: password,
-      }),
+      setPassword: (password) => ({type: 'setPassword', payload: password}),
 
-      setVerifyCode: (verifyCode) => ({
-        type: 'setVerifyCode',
-        payload: verifyCode
-      }),
+      setVerifyCode: (verifyCode) => ({type: 'setVerifyCode', payload: verifyCode})
     };
   }
 
-  static get reducer(){
+  static get reducer() {
     return {
-      setUser: (state, { payload }) =>
-        state.set('user', payload),
+      setUser: (state, {payload}) => state.set('user', payload),
 
-      setEmail: (state, { payload }) =>
-        state.set('email', payload),
+      setEmail: (state, {payload}) => state.set('email', payload),
 
-      setPassword: (state, { payload }) =>
-        state.set('password', payload),
-      
-      setVerifyCode: (state, { payload }) =>
-        state.set('verifyCode', payload),
+      setPassword: (state, {payload}) => state.set('password', payload),
 
-      setList: (state, { payload }) =>
-        state.set('fileList', fromJS(payload)),
+      setVerifyCode: (state, {payload}) => state.set('verifyCode', payload),
 
-      setII: (state, { payload }) =>
-        state.set('II', payload),
+      setList: (state, {payload}) => state.set('fileList', fromJS(payload)),
 
-      setFile: (state, { payload }) =>
-        state.set('file', payload),
+      setIdentityId: (state, {payload}) => state.set('identityId', payload),
+
+      setFile: (state, {payload}) => state.set('file', payload)
     }
   }
 
-  static get initState(){
+  static get initState() {
     return fromJS({
       email: '',
       password: '',
       verifyCode: '',
-      II: '',
+      identityId: '',
       file: '',
-      fileList: [],
+      fileList: []
     });
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.getCurrentUser();
   }
-  
-  setEmail = ({ target: { value: email }})=>{
+
+  setEmail = ({
+    target: {
+      value: email
+    }
+  }) => {
     this.props.setEmail(email);
   }
-  
-  setPassword = ({ target: { value: password }})=>{
+
+  setPassword = ({
+    target: {
+      value: password
+    }
+  }) => {
     this.props.setPassword(password);
   }
-  
-  setVerifyCode = ({ target: { value: verifyCode }})=>{
+
+  setVerifyCode = ({
+    target: {
+      value: verifyCode
+    }
+  }) => {
     this.props.setVerifyCode(verifyCode);
   }
 
-  
   render() {
 
     const email = this.props.subState.get('email');
@@ -136,41 +156,45 @@ class App extends Component {
 
     const fileList = this.props.subState.get('fileList');
     const file = this.props.subState.get('file');
-    
+
     return (
       <div className="App">
         <div>
-          email
-          <input type="email" value={email} onChange={this.setEmail} />
-          
-          password
-          <input type="password" value={password} onChange={this.setPassword} />
+
+          <input type="email" value={email} onChange={this.setEmail} placeholder='Email'/>
+
+          <input type="password" value={password} onChange={this.setPassword} placeholder='Password'/>
 
           verify
-          <input type="text" value={verifyCode} onChange={this.setVerifyCode} />
+          <input type="text" value={verifyCode} onChange={this.setVerifyCode}/>
 
-          <button onClick={()=> this.props.signup(email, password)}> sign up </button>
-          <button onClick={()=> this.props.verify(email, verifyCode)}> verify </button>
-          <button onClick={()=> this.props.login(email, password)}> log in </button>
+          <button onClick={() => this.props.signup(email, password)}>
+            sign up
+          </button>
+          <button onClick={() => this.props.verify(email, verifyCode)}>
+            verify
+          </button>
+          <button onClick={() => this.props.login(email, password)}>
+            log in
+          </button>
 
           {JSON.stringify(this.props.subState.get('user'))}
-          {this.props.subState.get('II')}
+          {this.props.subState.get('identityId')}
         </div>
 
         <hr/>
-        
-        <button onClick={()=> this.props.listBucket(this.props.subState.get('II'))}>
+
+        <button onClick={() => this.props.listBucket(this.props.subState.get('identityId'))}>
           list files
         </button>
-        
-        {
-          fileList.map((file, i) => console.log(file)||(
-            <div key={i} onClick={()=> this.props.getFile(file)}>{file}</div>
-          ) )
-        }
+
+        {fileList.map((file, i) => console.log(file) || (
+          <div key={i} onClick={() => this.props.getFile(file)}>{file}</div>
+        ))
+}
 
         <hr/>
-        
+
         <pre style={{ textAlign: 'left' }}>{file}</pre>
       </div>
     );

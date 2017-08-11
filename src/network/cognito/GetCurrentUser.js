@@ -36,24 +36,26 @@ const userPool = new CognitoUserPool({
 
 
 class GetCurrentUser {
-  constructor(next, done, err){
+  constructor(next, done, err) {
     this.next = next;
     this.done = done;
     this.err = err;
   }
 
-  handleRequest(action){
+  handleRequest(action) {
 
-    
+
     var cognitoUser = userPool.getCurrentUser();
 
     if (cognitoUser != null) {
       cognitoUser.getSession((err, session) => {
         if (err) {
           console.log(err);
-          this.err({ payload: err });
+          this.err({
+            payload: err
+          });
           this.done();
-          
+
         } else {
 
           console.log('session validity: ', session.isValid(), session);
@@ -61,8 +63,7 @@ class GetCurrentUser {
           const nuCC = Config.credentials = new CognitoIdentityCredentials({
             IdentityPoolId: appConfig.IdentityPoolId,
             Logins: {
-              ['cognito-idp.eu-west-1.amazonaws.com/'+appConfig.UserPoolId]:
-              session.getIdToken().getJwtToken()
+              ['cognito-idp.eu-west-1.amazonaws.com/' + appConfig.UserPoolId]: session.getIdToken().getJwtToken()
             },
           });
 
@@ -75,23 +76,26 @@ class GetCurrentUser {
           (new CognitoIdentity()).getId({
             IdentityPoolId: appConfig.IdentityPoolId,
             Logins: {
-              ['cognito-idp.eu-west-1.amazonaws.com/'+appConfig.UserPoolId]:
-              session.getIdToken().getJwtToken()
+              ['cognito-idp.eu-west-1.amazonaws.com/' + appConfig.UserPoolId]: session.getIdToken().getJwtToken()
             },
             AccountId: '735148112467',
-          }, (err, data)=>{
+          }, (err, data) => {
             console.log(err, data, 'id');
-            this.next({ payload: data.IdentityId });
+            if (err) this.err({
+              payload: err
+            })
+            else this.next({
+              payload: data.IdentityId
+            });
             this.done();
-            
+
           });
         }
       });
-      
+
     } else this.done();
-    
+
   }
 }
 
 export default GetCurrentUser;
-
