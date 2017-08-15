@@ -13,19 +13,13 @@ class UploadFile {
 
   handleRequest( action ){
 
-    s3 = s3 || new S3({
-      apiVersion: '2006-03-01',
-      params: { Bucket: BucketName }
-    });
+    const file = action.network.payload.file;
 
-    const files = action.network.payload.files;
-
-    console.log(files);
-
-    const  upload = new s3.ManagedUpload({
+    const  upload = new S3.ManagedUpload({
       params: {
-        Key: 'USERID/key-from-input.txt',
-        Body: 'blob from input',
+        Bucket: BucketName,
+        Key: action.network.payload.filename,
+        Body: file,
       },
     });
 

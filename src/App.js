@@ -34,10 +34,10 @@ class App extends Component {
         },
       }),
 
-      listBucket: (identityId) => ({
+      listBucket: (IdentityId) => ({
         network: {
           handler: 'ListBucket',
-          payload: { identityId },
+          payload: { IdentityId },
           nextAction: { type: 'setList' },
         },
       }),
@@ -73,10 +73,10 @@ class App extends Component {
         payload: verifyCode,
       }),
 
-      uploadFile: (files) => ({
+      uploadFile: (filename, file) => ({
         network: {
           handler: 'UploadFile',
-          payload: { files },
+          payload: { filename, file },
         },
       }),
     };
@@ -94,7 +94,7 @@ class App extends Component {
 
       setList: (state, {payload}) => state.set('fileList', fromJS(payload)),
 
-      setIdentityId: (state, {payload}) => state.set('identityId', payload),
+      setIdentityId: (state, {payload}) => state.set('IdentityId', payload),
 
       setFile: (state, {payload}) => state.set('file', payload),
     }
@@ -105,7 +105,7 @@ class App extends Component {
       email: '',
       password: '',
       verifyCode: '',
-      identityId: '',
+      IdentityId: '',
       file: '',
       fileList: [],
     });
@@ -129,7 +129,10 @@ class App extends Component {
 
   
   readFile = e => {
-    this.props.uploadFile( e.target.files );
+    const filename = e.target.value.split(/[\\\/]/).slice(-1)[0];
+    const IdentityId = this.props.subState.get('IdentityId');
+    
+    this.props.uploadFile( `${IdentityId}/${filename}`, e.target.files[0] );
   }
 
   render() {
@@ -138,6 +141,8 @@ class App extends Component {
     const password = this.props.subState.get('password');
     const verifyCode = this.props.subState.get('verifyCode');
 
+    const IdentityId = this.props.subState.get('IdentityId');
+    
     const fileList = this.props.subState.get('fileList');
     const file = this.props.subState.get('file');
 
@@ -163,12 +168,12 @@ class App extends Component {
           </button>
 
           {JSON.stringify(this.props.subState.get('user'))}
-          {this.props.subState.get('identityId')}
+          {this.props.subState.get('IdentityId')}
         </div>
 
         <hr/>
 
-        <button onClick={() => this.props.listBucket(this.props.subState.get('identityId'))}>
+        <button onClick={() => this.props.listBucket(IdentityId)}>
           list files
         </button>
 
