@@ -22,15 +22,17 @@ class UploadFile {
 
     console.log(files);
 
-    return this.done();
+    const  upload = new s3.ManagedUpload({
+      params: {
+        Key: 'USERID/key-from-input.txt',
+        Body: 'blob from input',
+      },
+    });
 
-    
-    s3.listObjects({
-      Prefix: 'home/'+action.network.payload.II
-    }, (err, data) => {
-      console.log(err, data);
+    return upload.send((err, res) => {
+      console.log(res);
       if(err) this.err({ payload: err });
-      else this.next({ payload: data.Contents.map(o => o.Key) });
+      else this.next({ payload: res });
 
       this.done();
     });
