@@ -5,6 +5,7 @@ import GetCurrentUser from './cognito/GetCurrentUser';
 
 import ListBucket from './s3/ListBucket';
 import GetFile from './s3/GetFile';
+import UploadFile from './s3/UploadFile';
 
 export default {
   Signup,
@@ -14,4 +15,5 @@ export default {
 
   ListBucket,
   GetFile,
+  UploadFile,
 };
