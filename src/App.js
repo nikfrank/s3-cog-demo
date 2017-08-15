@@ -14,80 +14,71 @@ class App extends Component {
       signup: (email, password) => ({
         network: {
           handler: 'Signup',
-          payload: {
-            email,
-            password
-          },
-          nextAction: {
-            type: 'setUser'
-          }
-        }
+          payload: { email, password },
+          nextAction: { type: 'setUser' },
+        },
       }),
 
       login: (email, password) => ({
         network: {
           handler: 'Login',
-          payload: {
-            email,
-            password
-          },
-          nextAction: {
-            type: 'setIdentityId'
-          }
-        }
+          payload: { email, password },
+          nextAction: { type: 'setIdentityId' },
+        },
       }),
 
       getCurrentUser: () => ({
         network: {
           handler: 'GetCurrentUser',
-          nextAction: {
-            type: 'setIdentityId'
-          }
-        }
+          nextAction: { type: 'setIdentityId' },
+        },
       }),
 
       listBucket: (identityId) => ({
         network: {
           handler: 'ListBucket',
-          payload: {
-            identityId
-          },
-          nextAction: {
-            type: 'setList'
-          }
-        }
+          payload: { identityId },
+          nextAction: { type: 'setList' },
+        },
       }),
 
       getFile: (file) => ({
         network: {
           handler: 'GetFile',
-          payload: {
-            file
-          },
-          nextAction: {
-            type: 'setFile'
-          }
-        }
+          payload: { file },
+          nextAction: { type: 'setFile' },
+        },
       }),
 
       verify: (email, verifyCode) => ({
         network: {
           handler: 'Verify',
-          payload: {
-            email,
-            verifyCode
-          },
-          nextAction: {
-            type: 'setUser'
-          }
-        }
+          payload: { email, verifyCode },
+          nextAction: { type: 'setUser' },
+        },
       }),
 
-      setEmail: (email) => ({type: 'setEmail', payload: email}),
+      setEmail: (email) => ({
+        type: 'setEmail',
+        payload: email,
+      }),
 
-      setPassword: (password) => ({type: 'setPassword', payload: password}),
+      setPassword: (password) => ({
+        type: 'setPassword',
+        payload: password,
+      }),
 
-      setVerifyCode: (verifyCode) => ({type: 'setVerifyCode', payload: verifyCode})
+      setVerifyCode: (verifyCode) => ({
+        type: 'setVerifyCode',
+        payload: verifyCode,
+      }),
+
+      uploadFile: (files) => ({
+        network: {
+          handler: 'UploadFile',
+          payload: { files },
+        },
+      }),
     };
   }
 
@@ -105,7 +96,7 @@ class App extends Component {
 
       setIdentityId: (state, {payload}) => state.set('identityId', payload),
 
-      setFile: (state, {payload}) => state.set('file', payload)
+      setFile: (state, {payload}) => state.set('file', payload),
     }
   }
 
@@ -116,7 +107,7 @@ class App extends Component {
       verifyCode: '',
       identityId: '',
       file: '',
-      fileList: []
+      fileList: [],
     });
   }
 
@@ -124,28 +115,21 @@ class App extends Component {
     this.props.getCurrentUser();
   }
 
-  setEmail = ({
-    target: {
-      value: email
-    }
-  }) => {
+  setEmail = ({ target: { value: email } }) => {
     this.props.setEmail(email);
   }
 
-  setPassword = ({
-    target: {
-      value: password
-    }
-  }) => {
+  setPassword = ({ target: { value: password } }) => {
     this.props.setPassword(password);
   }
 
-  setVerifyCode = ({
-    target: {
-      value: verifyCode
-    }
-  }) => {
+  setVerifyCode = ({ target: { value: verifyCode } }) => {
     this.props.setVerifyCode(verifyCode);
+  }
+
+  
+  readFile = e => {
+    this.props.uploadFile( e.target.files );
   }
 
   render() {
@@ -188,10 +172,15 @@ class App extends Component {
           list files
         </button>
 
-        {fileList.map((file, i) => console.log(file) || (
-          <div key={i} onClick={() => this.props.getFile(file)}>{file}</div>
-        ))
-}
+        {
+          fileList.map((file, i) => console.log(file) || (
+            <div key={i} onClick={() => this.props.getFile(file)}>{file}</div>
+          ))
+        }
+
+        <input id="upload" ref="upload" type="file" accept="text/*"
+               onChange={this.readFile}
+               onClick={(event)=> event.target.value = null}/>
 
         <hr/>
 
