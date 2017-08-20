@@ -19,7 +19,7 @@ class ListBucket {
     });
 
     s3.listObjects({
-      Prefix: 'home/'+action.network.payload.II
+      Prefix: 'home/'+action.network.payload.identityId
     }, (err, data) => {
       console.log(err, data);
       if(err) this.err({ payload: err });

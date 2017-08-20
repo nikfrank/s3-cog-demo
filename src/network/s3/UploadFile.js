@@ -22,7 +22,7 @@ class UploadFile {
 
     console.log(files);
 
-    const  upload = new s3.ManagedUpload({
+    const  upload = new s3.upload({
       params: {
         Key: 'USERID/key-from-input.txt',
         Body: 'blob from input',
