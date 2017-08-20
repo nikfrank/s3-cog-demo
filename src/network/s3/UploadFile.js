@@ -18,22 +18,16 @@ class UploadFile {
       params: { Bucket: BucketName }
     });
 
-    const files = action.network.payload.files;
+    const { file, filename, identityId } = action.network.payload;
 
-    console.log(files);
-
-    const  upload = new s3.upload({
-      params: {
-        Key: 'USERID/key-from-input.txt',
-        Body: 'blob from input',
-      },
-    });
-
-    return upload.send((err, res) => {
-      console.log(res);
-      if(err) this.err({ payload: err });
+    s3.upload({
+      Key: `home/${identityId}/${filename}`,
+      Body: file,
+    }, (err, res) => {
+      console.log(err, res);
+      if(err) console.log(err, 'err')|| this.err({ payload: err });
       else this.next({ payload: res });
-
+      
       this.done();
     });
   }

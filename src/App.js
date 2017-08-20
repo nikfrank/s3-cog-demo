@@ -73,10 +73,11 @@ class App extends Component {
         payload: verifyCode,
       }),
 
-      uploadFile: (files) => ({
+      uploadFile: (file, filename, identityId) => ({
         network: {
           handler: 'UploadFile',
-          payload: { files },
+          payload: { file, filename, identityId },
+          nextAction: { type: 'successFileUpload' },
         },
       }),
     };
@@ -97,6 +98,8 @@ class App extends Component {
       setIdentityId: (state, {payload}) => state.set('identityId', payload),
 
       setFile: (state, {payload}) => state.set('file', payload),
+
+      successFileUpload: (state, {payload}) => console.log(payload)||state.set('uploadedFile', 'hooray'),
     }
   }
 
@@ -108,6 +111,7 @@ class App extends Component {
       identityId: '',
       file: '',
       fileList: [],
+      uploadedFile: '',
     });
   }
 
@@ -129,7 +133,7 @@ class App extends Component {
 
   
   readFile = e => {
-    this.props.uploadFile( e.target.files );
+    this.props.uploadFile( e.target.files[0], e.target.value.slice(12), this.props.subState.get('identityId') );
   }
 
   render() {
@@ -140,6 +144,8 @@ class App extends Component {
 
     const fileList = this.props.subState.get('fileList');
     const file = this.props.subState.get('file');
+    
+    const uploadedFile = this.props.subState.get('uploadedFile');
 
     return (
       <div className="App">
@@ -173,7 +179,7 @@ class App extends Component {
         </button>
 
         {
-          fileList.map((file, i) => console.log(file) || (
+          fileList.map((file, i) => (
             <div key={i} onClick={() => this.props.getFile(file)}>{file}</div>
           ))
         }
@@ -185,6 +191,12 @@ class App extends Component {
         <hr/>
 
         <pre style={{ textAlign: 'left' }}>{file}</pre>
+
+        <hr/>
+
+        {
+          uploadedFile
+        }
       </div>
     );
   }
